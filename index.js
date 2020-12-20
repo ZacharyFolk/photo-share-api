@@ -1,31 +1,49 @@
-// 1. Require 'apollo-server'
 const { ApolloServer } = require('apollo-server')
 
-// define the schema
-// When create query must have a matching resolver
 const typeDefs = `
 type Query {
   totalPhotos: Int!
 }
-`
 
-// object in resolver must have same typename as object in Schema
+type Mutation {
+  postPhoto(name: String! description: String): Boolean!
+}
+`
+// 1. A data type to store photos in memory
+var photos = []
+
 const resolvers = {
   Query: {
-    totalPhotos: () => 42
+    // 2. Return the lenght of the array
+    totalPhotos: () => photos.length
+  },
+
+  // 3. Mutation and postPhoto resolver
+Mutation: {
+  postPhoto(parent, args) {
+    photos.push(args)
+    return true
   }
 }
+}
 
-// 2. Create a new instance of the server.
-// 3. Send it an object with typeDefs (the schema) and resolvers
 const server = new ApolloServer({
   typeDefs,
   resolvers
 })
 
-// 4. Call listen on the server to launch
 server
 .listen()
 .then(({url}) => console.log(`GraphQL Service is running on ${url}`))
 
 // npm start => the GraphQL Playground now at http://localhost:4000
+
+// 4 . Test Mutation
+// mutation newPhoto($name:String!, $description: String){
+//   postPhoto(name:$name, description:$description)
+// }
+// Add Query Variables
+// {
+//   "name": "test name",
+//   "description": "A sample"
+// }
